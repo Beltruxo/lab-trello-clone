@@ -17,6 +17,7 @@ exports.createCard = function(req, res, next) {
       console.log(err);
 			return res.send(500);
 		}
+		
 
 		// Update the corresponding list
 		// Lesson 2: Update the current list
