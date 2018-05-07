@@ -1,3 +1,5 @@
+require("dotenv").config();
+
 const express = require('express');
 const path = require('path');
 const favicon = require('serve-favicon');
@@ -5,12 +7,22 @@ const logger = require('morgan');
 const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
 const cors = require('cors');
-// Lesson 1: Require mongoose
-// Lesson 2: Require dotenv configuration
+const mongoose = require('mongoose');
 
 const app = express();
 
-app.use(cors());
+// Middleware Setup
+var whitelist = [
+  process.env.WHITELIST_URI,
+];
+var corsOptions = {
+  origin: function(origin, callback){
+      var originIsWhitelisted = whitelist.indexOf(origin) !== -1;
+      callback(null, originIsWhitelisted);
+  },
+  credentials: true
+};
+app.use(cors(corsOptions));
 
 app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
 app.use(logger('dev'));
@@ -20,8 +32,15 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
 // Mongoose configuration
-// Lesson 1: Mongoose configuration
-// Lesson 2: Use environment variable for the MONGODB_URI
+mongoose.Promise = Promise;
+mongoose
+  .connect(process.env.MONGODB_URI, { useMongoClient: true })
+  .then(() => {
+    console.log("Connected to Mongo!");
+  })
+  .catch(err => {
+    console.error("Error connecting to mongo", err);
+  });
 
 app.set('view engine', 'jade');
 
