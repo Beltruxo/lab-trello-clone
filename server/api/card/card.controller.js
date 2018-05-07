@@ -9,13 +9,18 @@ exports.createCard = function(req, res, next) {
 		description: req.body.description,
 		dueDate: req.body.dueDate,
 		list: req.body.list,
-        position: req.body.position
+    position: req.body.position
 	});
 
 	newCard.save(function(err, card) {
 		if(err) {
       console.log(err);
 			return res.send(500);
+		} else {
+			listModel.findByIdAndUpdate(card.list, {$push:{cards:card._id}})
+			.then(() => res.status(200).json(card))
+			
+			
 		}
 		
 
@@ -34,7 +39,7 @@ exports.editCard = function(req, res ,next) {
 			}
 
 			res.json({ message: 'card successfully updated', card: card });
-		});
+		})
 };
 
 exports.transferCard = function(req, res ,next) {
@@ -48,7 +53,6 @@ exports.transferCard = function(req, res ,next) {
 			if(err) {
 				return res.status(400).json({ message: 'unable to update card', error: err });
 			}
-
 			return Promise.all([
 				listModel.findByIdAndUpdate({ _id: sourceList }, { $pull: { cards: cardId }}).exec(),
 				listModel.findByIdAndUpdate({ _id: targetList }, { $push: { cards: cardId }}).exec()
@@ -68,9 +72,9 @@ exports.removeCard = function (req, res) {
     cardModel
         .findByIdAndRemove(req.params.id, function(err) {
             if (err) {
-                res.json({ message: 'impossible to remove the card', error: err });
+              return  res.status(400).json({ message: 'impossible to remove the card', error: err });
             };
 
-            res.json({ message: 'card removed successfully' });
+            res.status(200).json({ message: 'card removed successfully' });
         });
 };

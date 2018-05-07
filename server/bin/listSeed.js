@@ -22,12 +22,15 @@ List.create(list, (err, arrayList) => {
   position: 0,
   list: arrayList[0]._id}
   ]
-  Card.create(cards, err => {
+  Card.create(cards, (err, arrayCard) => {
     if(err){
       throw err;
     }
     console.log("Se ha añadido una carta")
-    mongoose.connection.close()
+    arrayList[0].update({$push:{cards:arrayCard[0]._id}}).then(() => mongoose.connection.close())
+    // List.findByIdAndUpdate(arrayList[0]._id,{$push:{cards:arrayCard[0]._id}})
+    // .then(() => mongoose.connection.close())
+    
   })
   
 

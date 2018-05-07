@@ -62,4 +62,17 @@ exports.editList = function(req, res, next) {
 
 exports.removeList = function (req, res) {
   // Lesson 2: Implement remove list form the database
+  listModel
+  .findById(req.params.id, (err, list) => {
+    if (err) {
+        res.status(400).json({ message: 'impossible to remove the list', error: err });
+    }
+if (list) {
+    list.cards.forEach(cardsId => {
+        cardModel.findByIdAndRemove(cardsId)
+    })
+    list.remove();
+    res.json({ message: 'list successfully deleted', list });
+} 
+  })
 };

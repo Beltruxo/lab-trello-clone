@@ -46,6 +46,8 @@ app.set('view engine', 'jade');
 
 require('./routes')(app);
 
+
+
 // error handler
 app.use(function(err, req, res, next) {
   // set locals, only providing error in development
@@ -56,5 +58,10 @@ app.use(function(err, req, res, next) {
   res.status(err.status || 500);
   res.render('error');
 });
+
+// routes
+
+const index = require('./routes/index');
+app.use("/", index);
 
 module.exports = app;
